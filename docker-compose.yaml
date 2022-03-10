@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  backend:
+    build: backend
+    command: sh -c '/wait-for-it.sh rabbitmq:5672 -- /wait-for-it.sh redis:6379 -- node index.js'
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - AMQP_DSN=amqp://guest:guest@rabbitmq:5672/
+      - REDIS_DSN=redis://redis:6379
+    depends_on:
+      - rabbitmq
+      - redis
+  worker:
+    build: worker
+    command: sh -c '/wait-for-it.sh rabbitmq:5672 -- /wait-for-it.sh redis:6379 -- python main.py'
+    environment:
+      - AMQP_DSN=amqp://guest:guest@rabbitmq:5672/
+      - REDIS_DSN=redis://redis:6379
+    depends_on:
+      - rabbitmq
+      - redis
+  rabbitmq:
+    image: rabbitmq:3.9.9-management-alpine
+    expose:
+      - 5672
+      - 15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+  redis:
+    image: 'redis:alpine'
+    ports:
+      - '6379:6379'
