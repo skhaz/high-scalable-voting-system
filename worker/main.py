@@ -10,6 +10,8 @@ channel = None
 
 redis = StrictRedis(connection_pool=ConnectionPool.from_url(os.environ["REDIS_DSN"]))
 
+QUEUE = "votes"
+
 
 def on_connected(connection):
     connection.channel(on_open_callback=on_channel_open)
@@ -19,7 +21,7 @@ def on_channel_open(new_channel):
     global channel
     channel = new_channel
     channel.queue_declare(
-        queue="votes",
+        queue=QUEUE,
         durable=True,
         exclusive=False,
         auto_delete=False,
@@ -28,7 +30,7 @@ def on_channel_open(new_channel):
 
 
 def on_queue_declared(frame):
-    channel.basic_consume("votes", handle_delivery)
+    channel.basic_consume(QUEUE, handle_delivery)
 
 
 def handle_delivery(channel, method, header, body):
