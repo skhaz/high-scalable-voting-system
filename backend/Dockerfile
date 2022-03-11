@@ -13,12 +13,16 @@ COPY package*.json ./
 RUN npm install --only=production
 
 FROM base
-COPY --from=builder wait-for-it.sh /wait-for-it.sh
 WORKDIR /app
 RUN apk add --no-cache bash
+COPY --from=builder wait-for-it.sh /usr/local/bin/
 COPY --from=builder dist .
 COPY --from=deps node_modules node_modules
+COPY docker-entrypoint.sh /usr/local/bin/
 
 ARG PORT=3000
 ENV PORT $PORT
 EXPOSE $PORT
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["node", "index.js"]

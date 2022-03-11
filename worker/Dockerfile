@@ -13,7 +13,11 @@ RUN apt-get update && apt-get install -y wget \
     && chmod +x wait-for-it.sh
 
 FROM base
-COPY --from=builder wait-for-it.sh /wait-for-it.sh
 WORKDIR /app
+COPY --from=builder wait-for-it.sh /usr/local/bin/
 COPY --from=builder /opt/venv /opt/venv
+COPY docker-entrypoint.sh /usr/local/bin/
 COPY main.py .
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["python", "main.py"]
