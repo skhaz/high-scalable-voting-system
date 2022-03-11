@@ -25,7 +25,6 @@ services:
     image: rabbitmq:3.9.9-management-alpine
     expose:
       - 5672
-      #- 15672
     environment:
       - RABBITMQ_DEFAULT_USER=guest
       - RABBITMQ_DEFAULT_PASS=guest
@@ -33,5 +32,3 @@ services:
     image: redis:alpine
     expose:
       - 6379
-    #ports:
-    #  - '6379:6379'
