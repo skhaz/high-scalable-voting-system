@@ -1,12 +1,12 @@
 ## Architecture
 
-Based on Big Brother Brasil's voting system I made this small but high scalable voting system.
+This project is a small but highly scalable voting system based on Big Brother Brasil's voting system.
 
-In a production environment, a load balancer will distribute the load across N instances of the backend container.
+At the front, a load balancer will distribute the load across N instances of the backend container in a production environment.
 
-The backend just exposes an API to vote, when a new vote is sent using POST, the backend will be sent a message to a queue on RabbitMQ and returns an HTTP 202 with a JSON.
+The backend exposes an API to vote. It just put the unique identifier of the request onto the RabbitMQ queue.
 
-Another process, called worker will be listening on the same RabbitMQ's queue, when a new message arrives, it just increments the key, which is the UID on Redis.
+Another process, called worker, will be listening on the same RabbitMQ queue. When a new message arrives, it just increments the key, the UID on Redis.
 
 Everything is horizontally scalable.
 
